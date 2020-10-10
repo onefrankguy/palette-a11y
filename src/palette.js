@@ -4,6 +4,31 @@ const Color = require('./color');
 
 const Palette = {};
 
+let currentPalette = 'aap64';
+let currentOrder = 'index';
+
+const sortByIndex = () => 0;
+
+const sortByLuminance = ({luminance: l1}, {luminance: l2}) => l2 - l1;
+
+const sortByDistance = (color1, color2) => {
+  const d1 = Color.distance(color1, Color.BLACK);
+  const d2 = Color.distance(color2, Color.BLACK);
+
+  return d2 - d1;
+};
+
+const getSortFromOrder = (order) => {
+  switch (order) {
+    case 'luminance':
+      return sortByLuminance;
+    case 'distance':
+      return sortByDistance;
+    default:
+      return sortByIndex;
+  }
+};
+
 const renderText = (color) => {
   const blackContrast = Color.contrast(color, Color.BLACK);
   const whiteContrast = Color.contrast(color, Color.WHITE);
@@ -32,7 +57,7 @@ const renderPaletteColors = (colors) => {
   return html;
 };
 
-const renderContrastingPalette = (pairs, cutoff) => {
+const renderContrastingPalette = (pairs, order, cutoff) => {
   let html = '';
 
   const passed = {};
@@ -50,9 +75,25 @@ const renderContrastingPalette = (pairs, cutoff) => {
     }
   });
 
-  Object.keys(passed).forEach((key) => {
+  const sort = getSortFromOrder(order);
+  const keys = Object.keys(passed)
+    .sort((color1, color2) => {
+      const c1 = Color.parse(color1);
+      const c2 = Color.parse(color2);
+
+      return sort(c1, c2);
+    });
+
+  keys.forEach((key) => {
     const pairs = passed[key];
     const background = pairs[0].background;
+
+    pairs.sort((color1, color2) => {
+      const c1 = sort(color1, background);
+      const c2 = sort(color2, background);
+
+      return c1 - c2;
+    });
 
     html += `<div class="swatch background" style="background-color: ${background.id};">`;
     html += renderSwatch(background, 'swatch background label');
@@ -67,23 +108,30 @@ const renderContrastingPalette = (pairs, cutoff) => {
   return html;
 };
 
-const renderPaletteAAA = (pairs) => renderContrastingPalette(pairs, (c) => c >= 7);
-const renderPaletteAA = (pairs) => renderContrastingPalette(pairs, (c) => c < 7 && c >= 4.5);
-const renderPaletteUI = (pairs) => renderContrastingPalette(pairs, (c) => c < 4.5 && c >= 3);
-const renderPaletteFX = (pairs) => renderContrastingPalette(pairs, (c) => c < 3);
+const renderPaletteAAA = (pairs, order) => renderContrastingPalette(pairs, order, (c) => c >= 7);
+const renderPaletteAA = (pairs, order) => renderContrastingPalette(pairs, order, (c) => c < 7 && c >= 4.5);
+const renderPaletteUI = (pairs, order) => renderContrastingPalette(pairs, order, (c) => c < 4.5 && c >= 3);
+const renderPaletteFX = (pairs, order) => renderContrastingPalette(pairs, order, (c) => c < 3);
 
-const renderPalette = (palette) => {
+const renderPalette = (palette, order) => {
   const colors = palette.colors
     .map(Color.parse)
-    .filter((color) => color);
+    .filter((color) => color)
+    .sort(getSortFromOrder(order));
 
   const pairs = Color.pairs(colors);
 
   $('#colors').html(renderPaletteColors(colors));
-  $('#aaa').html(renderPaletteAAA(pairs));
-  $('#aa').html(renderPaletteAA(pairs));
-  $('#ui').html(renderPaletteUI(pairs));
-  $('#fx').html(renderPaletteFX(pairs));
+  $('#aaa').html(renderPaletteAAA(pairs, order));
+  $('#aa').html(renderPaletteAA(pairs, order));
+  $('#ui').html(renderPaletteUI(pairs, order));
+  $('#fx').html(renderPaletteFX(pairs, order));
+};
+
+const render = () => {
+  const palette = palettes[currentPalette];
+
+  renderPalette(palette, currentOrder);
 };
 
 const renderPaletteOptions = () => {
@@ -97,9 +145,15 @@ const renderPaletteOptions = () => {
 };
 
 const onChangePalette = (event) => {
-  const palette = palettes[event.target.value];
+  currentPalette = event.target.value;
 
-  renderPalette(palette);
+  render();
+};
+
+const onSortPalette = (event) => {
+  currentOrder = event.target.value;
+
+  render();
 };
 
 Palette.build = () => {
@@ -107,6 +161,7 @@ Palette.build = () => {
 
   $('#palette-select').html(renderPaletteOptions());
   $('#palette-select').change(onChangePalette);
+  $('#palette-sort').change(onSortPalette);
 };
 
 module.exports = Palette;
