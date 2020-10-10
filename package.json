@@ -1,0 +1,28 @@
+{
+  "name": "palette-a11y",
+  "private": true,
+  "license": "MIT",
+  "version": "1.0.0",
+  "scripts": {
+    "predev": "rm -f dist/*",
+    "dev": "rollup -c -w",
+    "prebuild": "rm -f dist/*",
+    "build": "rollup -c"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "15.0.0",
+    "@rollup/plugin-html": "0.2.0",
+    "@rollup/plugin-json": "4.1.0",
+    "html-minifier-terser": "5.1.1",
+    "postcss-clean": "1.1.0",
+    "postcss-url": "8.0.0",
+    "rollup": "2.26.11",
+    "rollup-plugin-bundle-html": "0.2.2",
+    "rollup-plugin-livereload": "2.0.0",
+    "rollup-plugin-postcss": "3.1.8",
+    "rollup-plugin-serve": "1.0.4",
+    "rollup-plugin-terser": "7.0.2",
+    "sass": "1.26.10"
+  },
+  "dependencies": {}
+}
