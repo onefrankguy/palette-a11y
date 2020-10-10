@@ -1,19 +1,5 @@
 const Color = {};
 
-Color.BLACK = {
-  id: '#000000',
-  r: 0,
-  g: 0,
-  b: 0,
-};
-
-Color.WHITE = {
-  id: '#ffffff',
-  r: 255,
-  g: 255,
-  b: 255,
-};
-
 Color.luminance = ({r, g, b}) => {
   const sR = r / 255;
   const sG = g / 255;
@@ -63,7 +49,10 @@ Color.parse = (value) => {
     }
   }
 
-  return Color.BLACK;
+  return undefined;
 };
+
+Color.BLACK = Color.parse('#000000');
+Color.WHITE = Color.parse('#ffffff');
 
 module.exports = Color;

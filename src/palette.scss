@@ -11,18 +11,27 @@ html {
   font-family: Helvetica, Arial, sans-serif;
 }
 
-.easel {
-  margin: 32px;
+h2 {
+  font-size: 24px;
+  margin: 16px 0 8px 0;
 }
 
-.swatches {
-  margin-top: 16px;
+.easel {
+  margin: 32px;
 }
 
 .swatch {
   display: inline-block;
   padding: 8px;
   border: 1px solid #ffffff;
+}
+
+.swatch.background {
+  display: block;
+}
+
+.swatch.label {
+  border-color: transparent;
 }
 
 .black {
