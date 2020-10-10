@@ -24,13 +24,38 @@ Color.distance = (color1, color2) => {
   return Math.sqrt(r + g + b);
 };
 
-Color.contrast = (color1, color2) => {
-  const l1 = Color.luminance(color1);
-  const l2 = Color.luminance(color2);
+Color.contrast = ({luminance: l1}, {luminance: l2}) => {
   const lighter = l1 > l2 ? l1 : l2;
   const darker = l1 < l2 ? l1 : l2;
   
   return (lighter + 0.05) / (darker + 0.05);
+};
+
+Color.pairs = (colors) => {
+  const result = [];
+  const tested = [];
+
+  colors.forEach((foreground) => {
+    colors.forEach((background) => {
+      if (foreground.id !== background.id) {
+        const pairId = `${foreground.id}-${background.id}`;
+
+        if (!tested.includes(pairId)) {
+          const contrast = Color.contrast(foreground, background);
+
+          result.push({
+            foreground,
+            background,
+            contrast,
+          });
+
+          tested.push(pairId);
+        }
+      }
+    });
+  });
+
+  return result;
 };
 
 Color.parse = (value) => {
@@ -45,6 +70,7 @@ Color.parse = (value) => {
         r,
         g,
         b,
+        luminance: Color.luminance({r, g, b}),
       };
     }
   }

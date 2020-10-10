@@ -32,35 +32,22 @@ const renderPaletteColors = (colors) => {
   return html;
 };
 
-const renderContrastingPalette = (colors, cutoff) => {
+const renderContrastingPalette = (pairs, cutoff) => {
   let html = '';
 
-  const tested = [];
   const passed = {};
 
-  colors.forEach((foreground) => {
-    colors.forEach((background) => {
-      if (foreground.id !== background.id) {
-        const pairId = `${foreground.id}-${background.id}`;
-        
-        if (!tested.includes(pairId)) {
-          const contrast = Color.contrast(foreground, background);
-
-          if (cutoff(contrast)) {
-            if (!passed[background.id]) {
-              passed[background.id] = [];
-            }
-            passed[background.id].push({
-              foreground,
-              background,
-              contrast,
-            });
-          }
-
-          tested.push(pairId);
-        }
+  pairs.forEach(({foreground, background, contrast}) => {
+    if (cutoff(contrast)) {
+      if (!passed[background.id]) {
+        passed[background.id] = [];
       }
-    });
+      passed[background.id].push({
+        foreground,
+        background,
+        contrast,
+      });
+    }
   });
 
   Object.keys(passed).forEach((key) => {
@@ -80,21 +67,23 @@ const renderContrastingPalette = (colors, cutoff) => {
   return html;
 };
 
-const renderPaletteAAA = (colors) => renderContrastingPalette(colors, (c) => c >= 7);
-const renderPaletteAA = (colors) => renderContrastingPalette(colors, (c) => c < 7 && c >= 4.5);
-const renderPaletteUI = (colors) => renderContrastingPalette(colors, (c) => c < 4.5 && c >= 3);
-const renderPaletteFX = (colors) => renderContrastingPalette(colors, (c) => c < 3);
+const renderPaletteAAA = (pairs) => renderContrastingPalette(pairs, (c) => c >= 7);
+const renderPaletteAA = (pairs) => renderContrastingPalette(pairs, (c) => c < 7 && c >= 4.5);
+const renderPaletteUI = (pairs) => renderContrastingPalette(pairs, (c) => c < 4.5 && c >= 3);
+const renderPaletteFX = (pairs) => renderContrastingPalette(pairs, (c) => c < 3);
 
 const renderPalette = (palette) => {
   const colors = palette.colors
     .map(Color.parse)
     .filter((color) => color);
 
+  const pairs = Color.pairs(colors);
+
   $('#colors').html(renderPaletteColors(colors));
-  $('#aaa').html(renderPaletteAAA(colors));
-  $('#aa').html(renderPaletteAA(colors));
-  $('#ui').html(renderPaletteUI(colors));
-  $('#fx').html(renderPaletteFX(colors));
+  $('#aaa').html(renderPaletteAAA(pairs));
+  $('#aa').html(renderPaletteAA(pairs));
+  $('#ui').html(renderPaletteUI(pairs));
+  $('#fx').html(renderPaletteFX(pairs));
 };
 
 const renderPaletteOptions = () => {
