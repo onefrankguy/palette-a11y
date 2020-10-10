@@ -32,6 +32,17 @@ Fn.prototype.change = function change(handler) {
   }
 };
 
+Fn.prototype.click = function click(downHandler, upHandler) {
+  if (this.element) {
+    if (typeof downHandler === 'function') {
+      this.element.addEventListener('mousedown', downHandler);
+    }
+    if (typeof upHandler === 'function') {
+      this.element.addEventListener('mouseup', upHandler);
+    }
+  }
+};
+
 function root(selector) {
   return new Fn(selector);
 }

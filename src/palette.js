@@ -4,8 +4,9 @@ const Color = require('./color');
 
 const Palette = {};
 
-let currentPalette = 'aap64';
+let currentPalette = palettes.aap64;
 let currentOrder = 'index';
+let pinnedColors = [];
 
 const sortByIndex = () => 0;
 
@@ -34,44 +35,48 @@ const renderText = (color) => {
   const whiteContrast = Color.contrast(color, Color.WHITE);
   const klass = blackContrast > whiteContrast ? 'black' : 'white';
 
-  return `<span class="${klass}">${color.id}</span>`;
+  return `<span class="name ${klass}">${color.id}</span>`;
 };
 
 const renderSwatch = (color, klass = 'swatch') => {
   let html = '';
 
-  html += `<div class="${klass}" style="background-color: ${color.id};">`;
+  html += `<div class="${klass}" style="background-color: ${color.id};" data-color="${color.id}">`;
   html += renderText(color);
   html += `</div>`;
 
   return html;
 };
 
-const renderPaletteColors = (colors) => {
+const renderPaletteColors = (colors, pinned) => {
   let html = '';
 
   colors.forEach((color) => {
-    html += renderSwatch(color);
+    const klass = pinned.includes(color.id) ? 'swatch pinned' : 'swatch';
+
+    html += renderSwatch(color, klass);
   });
 
   return html;
 };
 
-const renderContrastingPalette = (pairs, order, cutoff) => {
+const renderContrastingPalette = (pairs, order, pinned, cutoff) => {
   let html = '';
 
   const passed = {};
 
   pairs.forEach(({foreground, background, contrast}) => {
-    if (cutoff(contrast)) {
-      if (!passed[background.id]) {
-        passed[background.id] = [];
+    if (!pinned.length || pinned.includes(background.id)) {
+      if (cutoff(contrast)) {
+        if (!passed[background.id]) {
+          passed[background.id] = [];
+        }
+        passed[background.id].push({
+          foreground,
+          background,
+          contrast,
+        });
       }
-      passed[background.id].push({
-        foreground,
-        background,
-        contrast,
-      });
     }
   });
 
@@ -108,30 +113,28 @@ const renderContrastingPalette = (pairs, order, cutoff) => {
   return html;
 };
 
-const renderPaletteAAA = (pairs, order) => renderContrastingPalette(pairs, order, (c) => c >= 7);
-const renderPaletteAA = (pairs, order) => renderContrastingPalette(pairs, order, (c) => c < 7 && c >= 4.5);
-const renderPaletteUI = (pairs, order) => renderContrastingPalette(pairs, order, (c) => c < 4.5 && c >= 3);
-const renderPaletteFX = (pairs, order) => renderContrastingPalette(pairs, order, (c) => c < 3);
+const renderPaletteAAA = (pairs, order, pinned) => renderContrastingPalette(pairs, order, pinned, (c) => c >= 7);
+const renderPaletteAA = (pairs, order, pinned) => renderContrastingPalette(pairs, order, pinned, (c) => c < 7 && c >= 4.5);
+const renderPaletteUI = (pairs, order, pinned) => renderContrastingPalette(pairs, order, pinned, (c) => c < 4.5 && c >= 3);
+const renderPaletteFX = (pairs, order, pinned) => renderContrastingPalette(pairs, order, pinned, (c) => c < 3);
 
-const renderPalette = (palette, order) => {
-  const colors = palette.colors
+const renderPalettes = (palette, order, pinned) => {
+  const colors = palette.colors.slice()
     .map(Color.parse)
     .filter((color) => color)
     .sort(getSortFromOrder(order));
 
   const pairs = Color.pairs(colors);
 
-  $('#colors').html(renderPaletteColors(colors));
-  $('#aaa').html(renderPaletteAAA(pairs, order));
-  $('#aa').html(renderPaletteAA(pairs, order));
-  $('#ui').html(renderPaletteUI(pairs, order));
-  $('#fx').html(renderPaletteFX(pairs, order));
+  $('#colors').html(renderPaletteColors(colors, pinned));
+  $('#aaa').html(renderPaletteAAA(pairs, order, pinned));
+  $('#aa').html(renderPaletteAA(pairs, order, pinned));
+  $('#ui').html(renderPaletteUI(pairs, order, pinned));
+  $('#fx').html(renderPaletteFX(pairs, order, pinned));
 };
 
 const render = () => {
-  const palette = palettes[currentPalette];
-
-  renderPalette(palette, currentOrder);
+  renderPalettes(currentPalette, currentOrder, pinnedColors);
 };
 
 const renderPaletteOptions = () => {
@@ -145,7 +148,8 @@ const renderPaletteOptions = () => {
 };
 
 const onChangePalette = (event) => {
-  currentPalette = event.target.value;
+  currentPalette = palettes[event.target.value];
+  pinnedColors = [];
 
   render();
 };
@@ -156,12 +160,33 @@ const onSortPalette = (event) => {
   render();
 };
 
-Palette.build = () => {
-  renderPalette(palettes.aap64);
+const onClickColor = (event) => {
+  let element = event.target;
 
+  while (element && !element.dataset.color) {
+    element = element.parentElement;
+  }
+
+  if (element && element.dataset.color) {
+    const color = element.dataset.color;
+
+    if (pinnedColors.includes(color)) {
+      pinnedColors = pinnedColors.filter((c) => c !== color);
+    } else {
+      pinnedColors.push(color);
+    }
+
+    render();
+  }
+};
+
+Palette.build = () => {
   $('#palette-select').html(renderPaletteOptions());
   $('#palette-select').change(onChangePalette);
   $('#palette-sort').change(onSortPalette);
+  $('#colors').click(onClickColor);
+
+  render();
 };
 
 module.exports = Palette;

@@ -28,7 +28,6 @@ h2 {
 .swatch {
   display: inline-block;
   padding: 8px;
-  border: 1px solid #ffffff;
 }
 
 .swatch.background {
@@ -36,7 +35,16 @@ h2 {
 }
 
 .swatch.label {
-  border-color: transparent;
+}
+
+.swatch > .name:before {
+  content: '\2713';
+  margin-right: 4px;
+  color: transparent;
+}
+
+.swatch.pinned > .name:before {
+  color: inherit;
 }
 
 .black {
