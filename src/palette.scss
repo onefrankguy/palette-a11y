@@ -30,21 +30,31 @@ h2 {
   padding: 8px;
 }
 
-.swatch.background {
+.background {
   display: block;
 }
 
-.swatch.label {
-}
-
-.swatch > .name:before {
+.select > .name:before {
   content: '\2713';
   margin-right: 4px;
   color: transparent;
 }
 
-.swatch.pinned > .name:before {
+.select.pinned > .name:before {
   color: inherit;
+}
+
+.button {
+  font-weight: bold;
+  padding: 12px;
+  border-radius: 8px;
+  box-shadow: 4px 4px rgba(0, 0, 0, 0.5);
+}
+
+.text {
+  display: block;
+  font-weight: bold;
+  padding: 8px 12px;
 }
 
 .black {

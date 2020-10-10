@@ -38,7 +38,7 @@ const renderText = (color) => {
   return `<span class="name ${klass}">${color.id}</span>`;
 };
 
-const renderSwatch = (color, klass = 'swatch') => {
+const renderSwatch = (color, klass) => {
   let html = '';
 
   html += `<div class="${klass}" style="background-color: ${color.id};" data-color="${color.id}">`;
@@ -48,11 +48,22 @@ const renderSwatch = (color, klass = 'swatch') => {
   return html;
 };
 
+const renderExample = (color) => {
+  let html = '';
+
+  html += '<div class="swatch">';
+  html += renderSwatch(color, 'swatch button');
+  html += `<div class="swatch text" style="color: ${color.id};">${color.id}</div>`;
+  html += '</div>';
+
+  return html;
+};
+
 const renderPaletteColors = (colors, pinned) => {
   let html = '';
 
   colors.forEach((color) => {
-    const klass = pinned.includes(color.id) ? 'swatch pinned' : 'swatch';
+    const klass = pinned.includes(color.id) ? 'swatch select pinned' : 'swatch select';
 
     html += renderSwatch(color, klass);
   });
@@ -101,10 +112,10 @@ const renderContrastingPalette = (pairs, order, pinned, cutoff) => {
     });
 
     html += `<div class="swatch background" style="background-color: ${background.id};">`;
-    html += renderSwatch(background, 'swatch background label');
+    html += renderSwatch(background, 'swatch background');
 
     pairs.forEach(({foreground}) => {
-      html += renderSwatch(foreground);
+      html += renderExample(foreground);
     });
 
     html += `</div>`;
