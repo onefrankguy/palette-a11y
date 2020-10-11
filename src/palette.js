@@ -77,7 +77,7 @@ const renderContrastingPalette = (pairs, order, pinned, cutoff) => {
   const passed = {};
 
   pairs.forEach(({foreground, background, contrast}) => {
-    if (!pinned.length || pinned.includes(background.id)) {
+    if (pinned.includes(background.id)) {
       if (cutoff(contrast)) {
         if (!passed[background.id]) {
           passed[background.id] = [];

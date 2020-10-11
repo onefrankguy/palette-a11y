@@ -3,38 +3,46 @@
   <head>
     <meta charset="utf-8"/>
     <title>Palette A11y</title>
+    <link href="https://fonts.googleapis.com/css2?family=Overpass&family=Permanent+Marker&display=swap" rel="stylesheet"/>
   </head>
 
   <body>
     <div class="easel">
-      <h1>Palette A11y</h1>
-      <label for="palette-select">Palette</label>
-      <select id="palette-select"></select>
-      <label for="palette-sort">Sort</label>
-      <select id="palette-sort">
-        <option value="index">Index</option>
-        <option value="luminance">Luminance</option>
-        <option value="distance">Distance</option>
-      </select>
-      <div>
-        <h2>Colors</h2>
-        <div id="colors" class="swatches"></div>
+      <h1 class="title-copy">Palette A11y</h1>
+      <p class="body-copy">Pick a palette from the list, then click the color swatches to choose background colors. Other colors in the palette that meet <a href="https://www.w3.org/TR/WCAG21/#use-of-color" title="Various (W3C): Web Content Accessibility Guidelines 2.1 - Use of Color">WCAG 2.1 accessibility guidelines</a> will show up below.</p>
+      <div class="body-copy">
+        <label for="palette-select">Palette</label>
+        <select id="palette-select"></select>
+        <label for="palette-sort">Sort</label>
+        <select id="palette-sort">
+          <option value="index">Index</option>
+          <option value="luminance">Luminance</option>
+          <option value="distance">Distance</option>
+        </select>
       </div>
       <div>
-        <h2>Small Text</h2>
-        <div id="aaa" class="swatches"></div>
+        <h2 class="header-copy">Colors</h2>
+        <div id="colors" class="body-copy swatches"></div>
       </div>
       <div>
-        <h2>Large Text</h2>
-        <div id="aa" class="swatches"></div>
+        <h2 class="header-copy">Text</h2>
+        <p class="body-copy">These color combinations have a contrast ratio of <strong>7:1</strong> or more.</p>
+        <div id="aaa" class="body-copy swatches"></div>
       </div>
       <div>
-        <h2>UI Elements</h2>
-        <div id="ui" class="swatches"></div>
+        <h2 class="header-copy">Large Text</h2>
+        <p class="body-copy">These color combinations have a contrast ratio of <strong>4.5:1</strong> or more.</p>
+        <div id="aa" class="body-copy swatches"></div>
       </div>
       <div>
-        <h2>Background FX</h2>
-        <div id="fx" class="swatches"></div>
+        <h2 class="header-copy">UI Elements</h2>
+        <p class="body-copy">These color combinations have a contrast ratio of <strong>3.1</strong> or more.</p>
+        <div id="ui" class="body-copy swatches"></div>
+      </div>
+      <div>
+        <h2 class="header-copy">Background FX</h2>
+        <p class="body-copy">These are color combinations that <strong>don&rsquo;t</strong> meet WCAG 2.1 accessibility guidelines.</p>
+        <div id="fx" class="body-copy swatches"></div>
       </div>
     </div>
   </body>
