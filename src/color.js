@@ -18,7 +18,7 @@ Color.distance = (color1, color2) => {
   const dg = color1.g - color2.g;
   const db = color1.b - color2.b;
   const r = (2 + (rmean / 256)) * dr * dr;
-  const g = 4 * dg;
+  const g = 4 * dg * dg;
   const b = (2 + ((255 - rmean) / 256)) * db * db;
 
   return Math.sqrt(r + g + b);
