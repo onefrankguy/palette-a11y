@@ -1,5 +1,13 @@
 const Color = {};
 
+const toHex = (value) => {
+  const hex = value.toString(16);
+
+  return hex.length > 1 ? hex : `0${hex}`;
+}
+
+const toHexColor = (r, g, b) => `${toHex(r)}${toHex(g)}${toHex(b)}`;
+
 Color.luminance = ({r, g, b}) => {
   const sR = r / 255;
   const sG = g / 255;
@@ -31,12 +39,48 @@ Color.contrast = ({luminance: l1}, {luminance: l2}) => {
   return (lighter + 0.05) / (darker + 0.05);
 };
 
-Color.pairs = (colors) => {
+Color.blend = (color1, color2) => {
+  let {r: srcR, g: srcG, b: srcB, a: srcA} = color1;
+  let {r: dstR, g: dstG, b: dstB, a: dstA} = color2;
+
+  if (!srcA && srcA !== 0) {
+    srcA = 255;
+  }
+  if (!dstA && dstA !== 0) {
+    dstA = 255;
+  }
+
+  srcR = srcR / 255;
+  srcG = srcG / 255;
+  srcB = srcB / 255;
+  srcA = srcA / 255;
+
+  dstR = dstR / 255;
+  dstG = dstG / 255;
+  dstB = dstB / 255;
+  dstA = dstA / 255;
+
+  const outA = srcA + (dstA * (1 - srcA));
+  const outRGB = (src, dst) => {
+    const value = ((src * srcA) + (dst * dstA * (1 - srcA))) / outA;
+
+    return Math.round(value * 255);
+  };
+
+  const r = outRGB(srcR, dstR);
+  const g = outRGB(srcG, dstG);
+  const b = outRGB(srcB, dstB);
+  const hexColor = toHexColor(r, g, b);
+
+  return Color.parse(`#${hexColor}`);
+};
+
+Color.pairs = (foregroundColors, backgroundColors) => {
   const result = [];
   const tested = [];
 
-  colors.forEach((foreground) => {
-    colors.forEach((background) => {
+  foregroundColors.forEach((foreground) => {
+    backgroundColors.forEach((background) => {
       if (foreground.id !== background.id) {
         const pairId = `${foreground.id}-${background.id}`;
 

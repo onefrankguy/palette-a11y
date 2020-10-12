@@ -4,8 +4,9 @@ const Color = require('./color');
 
 const Palette = {};
 
-let currentPalette = palettes.aap64;
+let currentPalette = palettes[0];
 let currentOrder = 'index';
+let currentOpacity = 255;
 let pinnedColors = [];
 
 const sortByIndex = () => 0;
@@ -77,7 +78,7 @@ const renderContrastingPalette = (pairs, order, pinned, cutoff) => {
   const passed = {};
 
   pairs.forEach(({foreground, background, contrast}) => {
-    if (pinned.includes(background.id)) {
+    if (pinned.includes(background.uuid)) {
       if (cutoff(contrast)) {
         if (!passed[background.id]) {
           passed[background.id] = [];
@@ -129,13 +130,26 @@ const renderPaletteAA = (pairs, order, pinned) => renderContrastingPalette(pairs
 const renderPaletteUI = (pairs, order, pinned) => renderContrastingPalette(pairs, order, pinned, (c) => c < 4.5 && c >= 3);
 const renderPaletteFX = (pairs, order, pinned) => renderContrastingPalette(pairs, order, pinned, (c) => c < 3);
 
-const renderPalettes = (palette, order, pinned) => {
+const renderPalettes = (palette, order, opacity, pinned) => {
   const colors = palette.colors.slice()
     .map(Color.parse)
     .filter((color) => color)
     .sort(getSortFromOrder(order));
 
-  const pairs = Color.pairs(colors);
+  const foregroundColors = colors.slice();
+  const backgroundColors = colors.map((color) => {
+    const c = Color.blend({
+      ...color,
+      a: opacity,
+    }, Color.WHITE);
+
+    return {
+      ...c,
+      uuid: color.id,
+    }
+  });
+
+  const pairs = Color.pairs(foregroundColors, backgroundColors);
 
   $('#colors').html(renderPaletteColors(colors, pinned));
   $('#aaa').html(renderPaletteAAA(pairs, order, pinned));
@@ -145,7 +159,7 @@ const renderPalettes = (palette, order, pinned) => {
 };
 
 const render = () => {
-  renderPalettes(currentPalette, currentOrder, pinnedColors);
+  renderPalettes(currentPalette, currentOrder, currentOpacity, pinnedColors);
 };
 
 const renderPaletteOptions = () => {
@@ -167,6 +181,12 @@ const onChangePalette = (event) => {
 
 const onSortPalette = (event) => {
   currentOrder = event.target.value;
+
+  render();
+};
+
+const onChangeOpacity = (event) => {
+  currentOpacity = parseInt(event.target.value, 10);
 
   render();
 };
@@ -195,6 +215,7 @@ Palette.build = () => {
   $('#palette-select').html(renderPaletteOptions());
   $('#palette-select').change(onChangePalette);
   $('#palette-sort').change(onSortPalette);
+  $('#palette-opacity').change(onChangeOpacity);
   $('#colors').click(onClickColor);
 
   render();
