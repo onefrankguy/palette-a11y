@@ -1,0 +1,54 @@
+{
+  "name": "Solarized",
+  "author": "Ethan Schoonover",
+  "url": "https://ethanschoonover.com/solarized/",
+  "colors": [{
+    "value": "#002b36",
+    "token": "Base03"
+  }, {
+    "value": "#073642",
+    "token": "Base02"
+  }, {
+    "value": "#586e75",
+    "token": "Base01"
+  }, {
+    "value": "#657b83",
+    "token": "Base00"
+  }, {
+    "value": "#839496",
+    "token": "Base0"
+  }, {
+    "value": "#93a1a1",
+    "token": "Base1"
+  }, {
+    "value": "#eee8d5",
+    "token": "Base2"
+  }, {
+    "value": "#fdf6e3",
+    "token": "Base3"
+  }, {
+    "value": "#b58900",
+    "token": "Yellow"
+  }, {
+    "value": "#cb4b16",
+    "token": "Orange"
+  }, {
+    "value": "#dc322f",
+    "token": "Red"
+  }, {
+    "value": "#d33682",
+    "token": "Magenta"
+  }, {
+    "value": "#6c71c4",
+    "token": "Violet"
+  }, {
+    "value": "#268bd2",
+    "token": "Blue"
+  }, {
+    "value": "#2aa198",
+    "token": "Cyan"
+  }, {
+    "value": "#859900",
+    "token": "Green"
+  }]
+}
