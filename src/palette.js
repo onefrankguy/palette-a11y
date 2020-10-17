@@ -82,17 +82,15 @@ const renderContrastingPalette = (pairs, order, pinned, cutoff) => {
   const passed = {};
 
   pairs.forEach(({foreground, background, contrast}) => {
-    if (pinned.includes(background.uuid)) {
-      if (cutoff(contrast)) {
-        if (!passed[background.id]) {
-          passed[background.id] = [];
-        }
-        passed[background.id].push({
-          foreground,
-          background,
-          contrast,
-        });
+    if (cutoff(contrast)) {
+      if (!passed[background.id]) {
+        passed[background.id] = [];
       }
+      passed[background.id].push({
+        foreground,
+        background,
+        contrast,
+      });
     }
   });
 
@@ -139,25 +137,20 @@ const renderPalettes = (palette, order, opacity, pinned) => {
     .map(Color.parse)
     .filter((color) => color);
  
-  const colors = Color.unique(parsedColors)
+  const foregroundColors = Color.unique(parsedColors)
     .sort(getSortFromOrder(order));
 
-  const foregroundColors = colors.slice();
-  const backgroundColors = colors.map((color) => {
-    const c = Color.blend({
+  const backgroundColors = pinned.slice()
+    .map(Color.parse)
+    .filter((color) => color)
+    .map((color) => Color.blend({
       ...color,
       a: opacity,
-    }, Color.WHITE);
-
-    return {
-      ...c,
-      uuid: color.id,
-    }
-  });
+    }, Color.WHITE));
 
   const pairs = Color.pairs(foregroundColors, backgroundColors);
 
-  $('#colors').html(renderPaletteColors(colors, pinned));
+  $('#colors').html(renderPaletteColors(foregroundColors, pinned));
   $('#aaa').html(renderPaletteAAA(pairs, order, pinned));
   $('#aa').html(renderPaletteAA(pairs, order, pinned));
   $('#ui').html(renderPaletteUI(pairs, order, pinned));
