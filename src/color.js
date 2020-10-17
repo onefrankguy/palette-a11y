@@ -64,7 +64,7 @@ Color.blend = (color1, color2) => {
   const outRGB = (src, dst) => {
     const value = ((src * srcA) + (dst * dstA * (1 - srcA))) / outA;
 
-    return Math.round(value * 255);
+    return Math.max(0, Math.min(Math.floor(value * 256), 255));
   };
 
   const r = outRGB(srcR, dstR);
