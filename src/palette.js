@@ -8,8 +8,20 @@ let currentPalette = palettes[0];
 let currentOrder = 'index';
 let currentOpacity = 100;
 let pinnedColors = [];
+let parsedPalette = currentPalette.colors.map(Color.parse);
 
-const sortByIndex = () => 0;
+const sortByIndex = (color1, color2) => {
+  const index1 = parsedPalette.findIndex((c) => c.id === color1.id);
+  const index2 = parsedPalette.findIndex((c) => c.id === color2.id);
+
+  if (index1 < index2) {
+    return -1;
+  }
+  if (index2 > index1) {
+    return 1;
+  }
+  return 0;
+};
 
 const sortByLuminance = ({luminance: l1}, {luminance: l2}) => l2 - l1;
 
@@ -76,17 +88,17 @@ const renderPaletteColors = (colors, pinned) => {
   return html;
 };
 
-const renderContrastingPalette = (pairs, order, pinned, cutoff) => {
+const renderContrastingPalette = (pairs, order, cutoff) => {
   let html = '';
 
   const passed = {};
 
   pairs.forEach(({foreground, background, contrast}) => {
     if (cutoff(contrast)) {
-      if (!passed[background.id]) {
-        passed[background.id] = [];
+      if (!passed[background.uuid]) {
+        passed[background.uuid] = [];
       }
-      passed[background.id].push({
+      passed[background.uuid].push({
         foreground,
         background,
         contrast,
@@ -95,16 +107,16 @@ const renderContrastingPalette = (pairs, order, pinned, cutoff) => {
   });
 
   const sort = getSortFromOrder(order);
-  const keys = Object.keys(passed)
+  const sortedPairs = Object.keys(passed)
     .sort((color1, color2) => {
-      const c1 = Color.parse(color1);
-      const c2 = Color.parse(color2);
+      const c1 = passed[color1][0].background;
+      const c2 = passed[color2][0].background;
 
       return sort(c1, c2);
-    });
+    })
+    .map((key) => passed[key])
 
-  keys.forEach((key) => {
-    const pairs = passed[key];
+  sortedPairs.forEach((pairs) => {
     const background = pairs[0].background;
 
     pairs.sort((color1, color2) => {
@@ -127,34 +139,42 @@ const renderContrastingPalette = (pairs, order, pinned, cutoff) => {
   return html;
 };
 
-const renderPaletteAAA = (pairs, order, pinned) => renderContrastingPalette(pairs, order, pinned, (c) => c >= 7);
-const renderPaletteAA = (pairs, order, pinned) => renderContrastingPalette(pairs, order, pinned, (c) => c < 7 && c >= 4.5);
-const renderPaletteUI = (pairs, order, pinned) => renderContrastingPalette(pairs, order, pinned, (c) => c < 4.5 && c >= 3);
-const renderPaletteFX = (pairs, order, pinned) => renderContrastingPalette(pairs, order, pinned, (c) => c < 3);
+const renderPaletteAAA = (pairs, order) => renderContrastingPalette(pairs, order, (c) => c >= 7);
+const renderPaletteAA = (pairs, order) => renderContrastingPalette(pairs, order, (c) => c < 7 && c >= 4.5);
+const renderPaletteUI = (pairs, order) => renderContrastingPalette(pairs, order, (c) => c < 4.5 && c >= 3);
+const renderPaletteFX = (pairs, order) => renderContrastingPalette(pairs, order, (c) => c < 3);
 
 const renderPalettes = (palette, order, opacity, pinned) => {
+  const sort = getSortFromOrder(order);
   const parsedColors = palette.colors.slice()
     .map(Color.parse)
     .filter((color) => color);
  
   const foregroundColors = Color.unique(parsedColors)
-    .sort(getSortFromOrder(order));
+    .sort(sort);
 
   const backgroundColors = pinned.slice()
     .map(Color.parse)
     .filter((color) => color)
-    .map((color) => Color.blend({
-      ...color,
-      a: opacity,
-    }, Color.WHITE));
+    .map((color) => {
+      const c = Color.blend({
+        ...color,
+        a: opacity,
+      }, Color.WHITE);
+
+      return {
+        ...c,
+        uuid: color.id,
+      };
+    });
 
   const pairs = Color.pairs(foregroundColors, backgroundColors);
 
   $('#colors').html(renderPaletteColors(foregroundColors, pinned));
-  $('#aaa').html(renderPaletteAAA(pairs, order, pinned));
-  $('#aa').html(renderPaletteAA(pairs, order, pinned));
-  $('#ui').html(renderPaletteUI(pairs, order, pinned));
-  $('#fx').html(renderPaletteFX(pairs, order, pinned));
+  $('#aaa').html(renderPaletteAAA(pairs, order));
+  $('#aa').html(renderPaletteAA(pairs, order));
+  $('#ui').html(renderPaletteUI(pairs, order));
+  $('#fx').html(renderPaletteFX(pairs, order));
 };
 
 const render = () => {
@@ -178,6 +198,7 @@ const renderPaletteOptions = () => {
 const onChangePalette = (event) => {
   currentPalette = palettes[event.target.value];
   pinnedColors = [];
+  parsedPalette = currentPalette.colors.map(Color.parse);
 
   render();
 };
