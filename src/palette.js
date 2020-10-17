@@ -6,7 +6,7 @@ const Palette = {};
 
 let currentPalette = palettes[0];
 let currentOrder = 'index';
-let currentOpacity = 255;
+let currentOpacity = 100;
 let pinnedColors = [];
 
 const sortByIndex = () => 0;
@@ -159,7 +159,11 @@ const renderPalettes = (palette, order, opacity, pinned) => {
 };
 
 const render = () => {
-  renderPalettes(currentPalette, currentOrder, currentOpacity, pinnedColors);
+  requestAnimationFrame(() => {
+    const opacity = Color.clamp(currentOpacity / 100);
+
+    renderPalettes(currentPalette, currentOrder, opacity, pinnedColors);
+  });
 };
 
 const renderPaletteOptions = () => {
@@ -188,7 +192,15 @@ const onSortPalette = (event) => {
 const onChangeOpacity = (event) => {
   currentOpacity = parseInt(event.target.value, 10);
 
+  $('#opacity').html(`${currentOpacity}%`);
+
   render();
+};
+
+const onInputOpacity = (event) => {
+  currentOpacity = parseInt(event.target.value, 10);
+
+  $('#opacity').html(`${currentOpacity}%`);
 };
 
 const onClickColor = (event) => {
@@ -216,6 +228,7 @@ Palette.build = () => {
   $('#palette-select').change(onChangePalette);
   $('#palette-sort').change(onSortPalette);
   $('#palette-opacity').change(onChangeOpacity);
+  $('#palette-opacity').input(onInputOpacity);
   $('#colors').click(onClickColor);
 
   render();

@@ -8,6 +8,8 @@ const toHex = (value) => {
 
 const toHexColor = (r, g, b) => `${toHex(r)}${toHex(g)}${toHex(b)}`;
 
+Color.clamp = (value) => Math.max(0, Math.min(Math.floor(value * 256), 255));
+
 Color.luminance = ({r, g, b}) => {
   const sR = r / 255;
   const sG = g / 255;
@@ -64,7 +66,7 @@ Color.blend = (color1, color2) => {
   const outRGB = (src, dst) => {
     const value = ((src * srcA) + (dst * dstA * (1 - srcA))) / outA;
 
-    return Math.max(0, Math.min(Math.floor(value * 256), 255));
+    return Color.clamp(value);
   };
 
   const r = outRGB(srcR, dstR);

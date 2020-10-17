@@ -32,6 +32,12 @@ Fn.prototype.change = function change(handler) {
   }
 };
 
+Fn.prototype.input = function input(handler) {
+  if (this.element && typeof handler === 'function') {
+    this.element.addEventListener('input', handler);
+  }
+};
+
 Fn.prototype.click = function click(downHandler, upHandler) {
   if (this.element) {
     if (typeof downHandler === 'function') {
