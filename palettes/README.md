@@ -12,8 +12,22 @@ _Palette A11y_ can use. That format is described in [JSON Schema][] as
   "colors": {
     "type": "array",
     "items": {
-      "type": "string",
-      "pattern": "^#[0-9a-fA-F]{6}$"
+      "oneOf": [{
+        "type": "string",
+        "pattern": "^#[0-9a-fA-F]{6}$"
+      }, {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string",
+            "pattern": "^#[0-9a-fA-F]{6}$"
+          },
+          "token": {
+            "type": "string"
+          },
+          "required": ["value"]
+        }
+      }]
     }
   }
 }

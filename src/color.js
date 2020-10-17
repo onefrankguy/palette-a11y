@@ -104,20 +104,66 @@ Color.pairs = (foregroundColors, backgroundColors) => {
   return result;
 };
 
-Color.parse = (value) => {
-  if (typeof value === 'string') {
-    if (value.startsWith('#')) {
-      const r = parseInt(value.slice(1, 3), 16);
-      const g = parseInt(value.slice(3, 5), 16);
-      const b = parseInt(value.slice(5, 7), 16);
+Color.unique = (colors) => {
+  const result = {};
 
-      return {
-        id: value,
-        r,
-        g,
-        b,
-        luminance: Color.luminance({r, g, b}),
+  colors.forEach((color) => {
+    if (!result[color.id]) {
+      result[color.id] = {
+        ...color,
+        token: undefined,
+        tokens: [color.id],
       };
+    }
+
+    if (color.token) {
+      result[color.id].tokens.push(color.token);
+    }
+  });
+
+  return Object.values(result);
+};
+
+const css2color = (value) => {
+  if (value && value.startsWith('#')) {
+    const r = parseInt(value.slice(1, 3), 16);
+    const g = parseInt(value.slice(3, 5), 16);
+    const b = parseInt(value.slice(5, 7), 16);
+
+    return {
+      id: value,
+      r,
+      g,
+      b,
+      luminance: Color.luminance({r, g, b}),
+    };
+  }
+
+   return undefined;
+};
+
+Color.parse = (value) => {
+  if (!value) {
+    return undefined;
+  }
+
+  if (typeof value === 'string') {
+    const color = css2color(value);
+
+    if (color) {
+      return color;
+    }
+  }
+
+  if (value.value && typeof value.value === 'string') {
+    const color = css2color(value.value);
+
+    if (color) {
+      if (value.token && typeof value.token === 'string') {
+        color.token = value.token;
+      }
+
+      return color;
     }
   }
 

@@ -54,7 +54,11 @@ const renderExample = (color) => {
 
   html += '<div class="swatch">';
   html += renderSwatch(color, 'swatch button');
-  html += `<div class="swatch text" style="color: ${color.id};">${color.id}</div>`;
+  html += `<div class="swatch text" style="color: ${color.id};">`;
+  color.tokens.forEach((token) => {
+    html += `<span>${token}</span>`;
+  });
+  html += `</div>`;
   html += '</div>';
 
   return html;
@@ -131,9 +135,11 @@ const renderPaletteUI = (pairs, order, pinned) => renderContrastingPalette(pairs
 const renderPaletteFX = (pairs, order, pinned) => renderContrastingPalette(pairs, order, pinned, (c) => c < 3);
 
 const renderPalettes = (palette, order, opacity, pinned) => {
-  const colors = palette.colors.slice()
+  const parsedColors = palette.colors.slice()
     .map(Color.parse)
-    .filter((color) => color)
+    .filter((color) => color);
+ 
+  const colors = Color.unique(parsedColors)
     .sort(getSortFromOrder(order));
 
   const foregroundColors = colors.slice();
