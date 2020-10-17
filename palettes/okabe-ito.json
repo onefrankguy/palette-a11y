@@ -1,0 +1,33 @@
+{
+  "name": "Color Universal Design",
+  "author": "Mastaka Okabe, Kei Ito",
+  "url": "https://jfly.uni-koeln.de/color/",
+  "colors": [{
+    "value": "#ffffff",
+    "token": "White"
+  }, {
+    "value": "#000000",
+    "token": "Black"
+  }, {
+    "value": "#e69f00",
+    "token": "Orange"
+  }, {
+    "value": "#56b4e9",
+    "token": "Sky Blue"
+  }, {
+    "value": "#009e73",
+    "token": "Bluish Green"
+  }, {
+    "value": "#f0e442",
+    "token": "Yellow"
+  }, {
+    "value": "#0072b2",
+    "token": "Blue"
+  }, {
+    "value": "#d55e00",
+    "token": "Vermilion"
+  }, {
+    "value": "#cc79a7",
+    "token": "Reddish Purple"
+  }]
+}
