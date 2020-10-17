@@ -1,6 +1,5 @@
 /* RESET */
 * {
-  cursor: default;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -58,6 +57,10 @@ select {
   padding: 14px 7px;
 }
 
+.select {
+  cursor: default;
+}
+
 .select > .name:before {
   content: '\2713';
   margin-right: 4px;
@@ -76,7 +79,8 @@ select {
 }
 
 .text {
-  display: block;
+  display: flex;
+  flex-direction: column;
   font-weight: bold;
   padding: 7px 14px;
 }
