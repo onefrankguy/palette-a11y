@@ -7,7 +7,8 @@
     "predev": "rm -f dist/*",
     "dev": "rollup -c -w",
     "prebuild": "rm -f dist/*",
-    "build": "rollup -c"
+    "build": "rollup -c",
+    "postbuild": "cp dist/index.html docs/."
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "15.0.0",
